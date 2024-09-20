@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sri Balaji Harvester Billing System</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <header>
+        <h1>Sri Balaji Harvester</h1>
+        <p>Address: Ramlathanda, Suryapet</p>
+        <p>Prop: Naveen Kumar</p>
+        <p>Mobile No: 9666551350</p>
+    </header>
+
+    <div class="tabs">
+        <button onclick="showTab('register-customer')">Register Customer</button>
+        <button onclick="showTab('list-customers')">List of Registered Customers</button>
+        <button onclick="showTab('payments')">Payments</button>
+        <button onclick="showTab('loans')">Loans</button>
+        <button onclick="showTab('expenses')">Expenses</button> <!-- New Expenses Tab -->
+    </div>
+  <div id="register-customer" class="tab-content">
+        <h2>Registration of Customer</h2>
+        <form id="customer-form">
+            <table>
+                <tbody>
+                    <tr>
+                        <td>Serial No:</td>
+                        <td><span id="serial-no">Auto-generated</span></td>
+                    </tr>
+                    <tr>
+                        <td>Customer Name:</td>
+                        <td><input type="text" id="customer-name" required aria-required="true"></td>
+                    </tr>
+                    <tr>
+                        <td>Mobile Number:</td>
+                        <td><input type="tel" id="customer-mobile" required aria-required="true"></td>
+                    </tr>
+                    <tr>
+                        <td>Address:</td>
+                        <td><input type="text" id="customer-address" required aria-required="true"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Harvesting Details</h3>
+            <table id="harvesting-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Service Name</th>
+                        <th>Time (HH:MM)</th>
+                        <th>Price per Hour</th>
+                        <th>Total Amount</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Service rows will be added here -->
+                </tbody>
+            </table>
+            <div class="service-details">
+                <label for="service-date">Service Date:</label>
+                <input type="date" id="service-date">
+                <label for="service-name">Service Name:</label>
+                <select id="service-name">
+                    <option value="GAM">GAM</option>
+                    <option value="4*4">4*4</option>
+                    <option value="2*2">2*2</option>
+                </select>
+                <label for="service-time">Time (HH:MM):</label>
+                <input type="text" id="service-time" placeholder="00:00">
+                <label for="service-price">Price per Hour:</label>
+                <input type="number" id="service-price" step="0.01">
+                <button type="button" onclick="addService()">Add Service</button>
+            </div>
+
+            <div class="totals">
+                <p>Total Amount: <span id="total-amount">0</span></p>
+                <label for="advance-amount">Advance Amount:</label>
+                <input type="number" id="advance-amount" step="0.01" oninput="updateTotals()">
+                <p>Pending Amount: <span id="pending-amount">0</span></p>
+                <button type="button" onclick="saveCustomer()">Save</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="list-customers" class="tab-content" style="display:none;">
+        <h2>List of Registered Customers</h2>
+        <input type="text" id="search" placeholder="Search..." oninput="searchCustomer()">
+        <table id="registered-customers">
+            <thead>
+                <tr>
+                    <th>Serial No</th>
+                    <th>Customer Name</th>
+                    <th>Mobile Number</th>
+                    <th>Address</th>
+                    <th>Pending Amount</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Customer rows will be added here -->
+            </tbody>
+        </table>
+    </div>
+
+    <div id="payments" class="tab-content" style="display:none;">
+        <h2>Payments</h2>
+        <table id="payments-table">
+            <thead>
+                <tr>
+                    <th>Serial No</th>
+                    <th>Customer Name</th>
+                    <th>Total Amount</th>
+                    <th>Pending Amount</th>
+                    <th>Actions</th> <!-- Added Actions column -->
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Payment rows will be dynamically added here -->
+            </tbody>
+        </table>
+        <div class="summary">
+            <p>Total Amount for All Customers: <span id="total-amount-all">0</span></p>
+            <p>Total Pending Amount for All Customers: <span id="pending-amount-all">0</span></p>
+        </div>
+    </div>
+
+    <div id="loans" class="tab-content" style="display:none;">
+        <h2>Loans</h2>
+        <table id="loans-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Loan From</th>
+                    <th>Amount</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Loan rows will be added here -->
+            </tbody>
+        </table>
+        <div class="loan-details">
+            <label for="loan-date">Date:</label>
+            <input type="date" id="loan-date">
+            <label for="loan-from">Loan From:</label>
+            <input type="text" id="loan-from">
+            <label for="loan-amount">Amount:</label>
+            <input type="number" id="loan-amount" step="0.01">
+            <button type="button" onclick="addLoan()">Add Loan</button>
+        </div>
+        <div class="summary">
+            <p>Total Loan Amount: <span id="total-loan-amount">0</span></p>
+            <button type="button" onclick="saveLoans()">Save Loans</button>
+        </div>
+    </div>
+
+    <!-- Existing Customer Registration and Payments Tabs -->
+
+    <div id="expenses" class="tab-content" style="display:none;">
+        <h2>Expenses</h2>
+        <div class="expense-tabs">
+            <button onclick="showExpenseTab('expense-1')">GAM</button>
+            <button onclick="showExpenseTab('expense-2')">Expense Tab 2</button>
+            <button onclick="showExpenseTab('expense-3')">Expense Tab 3</button>
+            <button onclick="showExpenseTab('expense-4')">Expense Tab 4</button>
+        </div>
+
+        <div id="expense-1" class="expense-tab-content" style="display:none;">
+            <h3>Expense Tab 1</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Purpose</th>
+                        <th>Received</th>
+                        <th>Amount</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="expense-table-1">
+                    <!-- Expense rows will be added here -->
+                </tbody>
+            </table>
+            <input type="date" id="expense-date-1">
+            <input type="text" id="expense-purpose-1" placeholder="Purpose">
+            <input type="text" id="expense-received-1" placeholder="Received">
+            <input type="number" id="expense-amount-1" placeholder="Amount" step="0.01">
+            <button type="button" onclick="addExpense(1)">Add Expense</button>
+            <p>Total: <span id="total-expense-1">0</span></p>
+        </div>
+
+        <div id="expense-2" class="expense-tab-content" style="display:none;">
+            <h3>Expense Tab 2</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Purpose</th>
+                        <th>Received</th>
+                        <th>Amount</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="expense-table-2">
+                    <!-- Expense rows will be added here -->
+                </tbody>
+            </table>
+            <input type="date" id="expense-date-2">
+            <input type="text" id="expense-purpose-2" placeholder="Purpose">
+            <input type="text" id="expense-received-2" placeholder="Received">
+            <input type="number" id="expense-amount-2" placeholder="Amount" step="0.01">
+            <button type="button" onclick="addExpense(2)">Add Expense</button>
+            <p>Total: <span id="total-expense-2">0</span></p>
+        </div>
+
+        <div id="expense-3" class="expense-tab-content" style="display:none;">
+            <h3>Expense Tab 3</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Purpose</th>
+                        <th>Received</th>
+                        <th>Amount</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="expense-table-3">
+                    <!-- Expense rows will be added here -->
+                </tbody>
+            </table>
+            <input type="date" id="expense-date-3">
+            <input type="text" id="expense-purpose-3" placeholder="Purpose">
+            <input type="text" id="expense-received-3" placeholder="Received">
+            <input type="number" id="expense-amount-3" placeholder="Amount" step="0.01">
+            <button type="button" onclick="addExpense(3)">Add Expense</button>
+            <p>Total: <span id="total-expense-3">0</span></p>
+        </div>
+
+        <div id="expense-4" class="expense-tab-content" style="display:none;">
+            <h3>Expense Tab 4</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Purpose</th>
+                        <th>Received</th>
+                        <th>Amount</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="expense-table-4">
+                    <!-- Expense rows will be added here -->
+                </tbody>
+            </table>
+            <input type="date" id="expense-date-4">
+            <input type="text" id="expense-purpose-4" placeholder="Purpose">
+            <input type="text" id="expense-received-4" placeholder="Received">
+            <input type="number" id="expense-amount-4" placeholder="Amount" step="0.01">
+            <button type="button" onclick="addExpense(4)">Add Expense</button>
+            <p>Total: <span id="total-expense-4">0</span></p>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
